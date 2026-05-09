@@ -50,6 +50,19 @@ _A = {"type": "string", "description": "hex address"}
 _N = {"type": "integer", "description": "count", "optional": True}
 _Q = {"type": "string", "description": "filter query", "optional": True}
 _OFF = {"type": "integer", "description": "offset for pagination", "optional": True}
+_STR_PAIR = {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2}
+_COMMENT_ITEM = {
+    "type": "array",
+    "items": {"anyOf": [{"type": "string"}, {"type": "integer"}]},
+    "minItems": 2,
+    "maxItems": 3,
+}
+_BATCH_OP = {
+    "type": "array",
+    "items": {"anyOf": [{"type": "string"}, {"type": "object"}]},
+    "minItems": 2,
+    "maxItems": 2,
+}
 
 TOOLS_SCHEMA = [
     _t("list_files", "List connected IDA instances"),
@@ -116,10 +129,10 @@ TOOLS_SCHEMA = [
     _t("undefine", "Undefine (make unknown) bytes at address", {"f": _F, "a": _A, "sz": {"type":"integer","description":"size"}}),
     _t("rename_var", "Rename a decompiled local variable", {"f": _F, "a": _A, "old": {"type":"string","description":"old name"}, "new": {"type":"string","description":"new name"}}),
     _t("retype_var", "Change type of a decompiled variable", {"f": _F, "a": _A, "var": {"type":"string","description":"var name"}, "decl": {"type":"string","description":"C type"}}),
-    _t("batch", "Batch execute multiple tools in one call", {"f": {"type":"string","description":"default file_id","optional":True}, "ops": {"type":"array","description":"[[tool_name,{args}],...]","items":{"type":"array"}}}),
-    _t("batch_set_names", "Batch rename: set names at multiple addresses in one call", {"f": _F, "names": {"type":"array","description":"[[hex_addr, name], ...]","items":{"type":"array"}}}),
-    _t("batch_set_comments", "Batch comment: set comments at multiple addresses in one call", {"f": _F, "comments": {"type":"array","description":"[[hex_addr, text, rep?], ...]","items":{"type":"array"}}}),
-    _t("batch_set_types", "Batch set types at multiple addresses in one call", {"f": _F, "types": {"type":"array","description":"[[hex_addr, c_decl], ...]","items":{"type":"array"}}}),
+    _t("batch", "Batch execute multiple tools in one call", {"f": {"type":"string","description":"default file_id","optional":True}, "ops": {"type":"array","description":"[[tool_name,{args}],...]","items":_BATCH_OP}}),
+    _t("batch_set_names", "Batch rename: set names at multiple addresses in one call", {"f": _F, "names": {"type":"array","description":"[[hex_addr, name], ...]","items":_STR_PAIR}}),
+    _t("batch_set_comments", "Batch comment: set comments at multiple addresses in one call", {"f": _F, "comments": {"type":"array","description":"[[hex_addr, text, rep?], ...]","items":_COMMENT_ITEM}}),
+    _t("batch_set_types", "Batch set types at multiple addresses in one call", {"f": _F, "types": {"type":"array","description":"[[hex_addr, c_decl], ...]","items":_STR_PAIR}}),
     _t("batch_decompile", "Decompile multiple functions in one call", {"f": _F, "addrs": {"type":"array","description":"[hex_addr, ...]","items":{"type":"string"}}}),
     _t("get_func_by_addr", "Find which function contains the given address (any addr, not just func start)", {"f": _F, "a": _A}),
     _t("call_tree", "Build forward call tree (recursive callees from function)", {"f": _F, "a": _A, "depth": {"type":"integer","description":"max depth (default 5)","optional":True}}),

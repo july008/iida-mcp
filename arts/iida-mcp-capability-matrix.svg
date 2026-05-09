@@ -1,0 +1,381 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1524" viewBox="0 0 1600 1524" role="img" aria-labelledby="title desc">
+  <title id="title">iida-mcp tool matrix</title>
+  <desc id="desc">A compact dark matrix listing all 79 iida-mcp tools grouped by capability area.</desc>
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".42"/>
+      <stop offset=".34" stop-color="#8ff4e5" stop-opacity=".32"/>
+      <stop offset=".70" stop-color="#7f8cff" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".08"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".02"/>
+      <stop offset=".5" stop-color="#8ff4e5" stop-opacity=".44"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".02"/>
+    </linearGradient>
+    <style>
+      .font { font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif; }
+      .bg { fill: #000; }
+      .cell { fill: #070707; stroke: url(#edge); stroke-width: 1; }
+      .title { fill: #f2f5f8; }
+      .muted { fill: #737b85; }
+      .section { fill: #8b949f; font-size: 11px; font-weight: 680; letter-spacing: .9px; }
+      .tool { fill: #e4eaf0; font-size: 12px; font-weight: 660; }
+      .zh { fill: #88929d; font-size: 10.5px; font-weight: 520; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1524" class="bg"/>
+  <g class="font">
+    <text x="102" y="76" class="title" font-size="32" font-weight="700">iida-mcp tool matrix</text>
+    <text x="1498" y="76" class="muted" font-size="15" text-anchor="end">79 actual tools from TOOLS_SCHEMA</text>
+    <g transform="translate(102 124)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">FILE / SESSION</text>
+    </g>
+    <g transform="translate(102 150)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_files</tspan><tspan x="168" dy="16" class="zh">列出文件</tspan></text>
+    </g>
+    <g transform="translate(450 150)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_info</tspan><tspan x="168" dy="16" class="zh">获取信息</tspan></text>
+    </g>
+    <g transform="translate(798 150)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">read_file_bytes</tspan><tspan x="168" dy="16" class="zh">读文件字节</tspan></text>
+    </g>
+    <g transform="translate(1146 150)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">addr_to_fileoff</tspan><tspan x="168" dy="16" class="zh">地址转偏移</tspan></text>
+    </g>
+    <g transform="translate(102 200)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_filepath</tspan><tspan x="168" dy="16" class="zh">文件路径</tspan></text>
+    </g>
+    <g transform="translate(450 200)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">parse_pe</tspan><tspan x="168" dy="16" class="zh">解析 PE</tspan></text>
+    </g>
+    <g transform="translate(798 200)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">parse_elf</tspan><tspan x="168" dy="16" class="zh">解析 ELF</tspan></text>
+    </g>
+    <g transform="translate(102 256)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">FUNCTIONS / DECOMPILER</text>
+    </g>
+    <g transform="translate(102 282)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_functions</tspan><tspan x="168" dy="16" class="zh">函数列表</tspan></text>
+    </g>
+    <g transform="translate(450 282)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_func_info</tspan><tspan x="168" dy="16" class="zh">函数信息</tspan></text>
+    </g>
+    <g transform="translate(798 282)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">decompile</tspan><tspan x="168" dy="16" class="zh">反编译</tspan></text>
+    </g>
+    <g transform="translate(1146 282)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_func_type</tspan><tspan x="168" dy="16" class="zh">函数类型</tspan></text>
+    </g>
+    <g transform="translate(102 332)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_callers</tspan><tspan x="168" dy="16" class="zh">调用者</tspan></text>
+    </g>
+    <g transform="translate(450 332)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_callees</tspan><tspan x="168" dy="16" class="zh">被调函数</tspan></text>
+    </g>
+    <g transform="translate(798 332)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_local_vars</tspan><tspan x="168" dy="16" class="zh">局部变量</tspan></text>
+    </g>
+    <g transform="translate(1146 332)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_func_args</tspan><tspan x="168" dy="16" class="zh">函数参数</tspan></text>
+    </g>
+    <g transform="translate(102 382)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">disassemble</tspan><tspan x="168" dy="16" class="zh">反汇编</tspan></text>
+    </g>
+    <g transform="translate(102 438)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">IDA DATABASE</text>
+    </g>
+    <g transform="translate(102 464)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">read_bytes</tspan><tspan x="168" dy="16" class="zh">读 IDB 字节</tspan></text>
+    </g>
+    <g transform="translate(450 464)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">write_bytes</tspan><tspan x="168" dy="16" class="zh">写 IDB 字节</tspan></text>
+    </g>
+    <g transform="translate(798 464)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_head</tspan><tspan x="168" dy="16" class="zh">获取项头</tspan></text>
+    </g>
+    <g transform="translate(1146 464)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_name</tspan><tspan x="168" dy="16" class="zh">获取名称</tspan></text>
+    </g>
+    <g transform="translate(102 514)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_name</tspan><tspan x="168" dy="16" class="zh">设置名称</tspan></text>
+    </g>
+    <g transform="translate(450 514)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_comment</tspan><tspan x="168" dy="16" class="zh">获取注释</tspan></text>
+    </g>
+    <g transform="translate(798 514)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_comment</tspan><tspan x="168" dy="16" class="zh">设置注释</tspan></text>
+    </g>
+    <g transform="translate(1146 514)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">search_names</tspan><tspan x="168" dy="16" class="zh">搜索名称</tspan></text>
+    </g>
+    <g transform="translate(102 570)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">TYPE SYSTEM</text>
+    </g>
+    <g transform="translate(102 596)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_type</tspan><tspan x="168" dy="16" class="zh">获取类型</tspan></text>
+    </g>
+    <g transform="translate(450 596)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_type</tspan><tspan x="168" dy="16" class="zh">设置类型</tspan></text>
+    </g>
+    <g transform="translate(798 596)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_structs</tspan><tspan x="168" dy="16" class="zh">结构体列表</tspan></text>
+    </g>
+    <g transform="translate(1146 596)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_struct</tspan><tspan x="168" dy="16" class="zh">获取结构体</tspan></text>
+    </g>
+    <g transform="translate(102 646)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_struct_details</tspan><tspan x="168" dy="16" class="zh">结构体详情</tspan></text>
+    </g>
+    <g transform="translate(450 646)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">read_struct</tspan><tspan x="168" dy="16" class="zh">读取结构体</tspan></text>
+    </g>
+    <g transform="translate(798 646)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_struct</tspan><tspan x="168" dy="16" class="zh">设置结构体</tspan></text>
+    </g>
+    <g transform="translate(1146 646)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">delete_struct</tspan><tspan x="168" dy="16" class="zh">删除结构体</tspan></text>
+    </g>
+    <g transform="translate(102 696)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_enums</tspan><tspan x="168" dy="16" class="zh">枚举列表</tspan></text>
+    </g>
+    <g transform="translate(450 696)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_enum</tspan><tspan x="168" dy="16" class="zh">获取枚举</tspan></text>
+    </g>
+    <g transform="translate(798 696)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">find_enum_value</tspan><tspan x="168" dy="16" class="zh">查枚举值</tspan></text>
+    </g>
+    <g transform="translate(1146 696)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_enum</tspan><tspan x="168" dy="16" class="zh">设置枚举</tspan></text>
+    </g>
+    <g transform="translate(102 746)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_local_types</tspan><tspan x="168" dy="16" class="zh">本地类型列表</tspan></text>
+    </g>
+    <g transform="translate(450 746)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_local_type</tspan><tspan x="168" dy="16" class="zh">获取本地类型</tspan></text>
+    </g>
+    <g transform="translate(798 746)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">set_local_type</tspan><tspan x="168" dy="16" class="zh">设置本地类型</tspan></text>
+    </g>
+    <g transform="translate(102 802)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">ANALYSIS GRAPH / SEARCH</text>
+    </g>
+    <g transform="translate(102 828)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_segments</tspan><tspan x="168" dy="16" class="zh">段列表</tspan></text>
+    </g>
+    <g transform="translate(450 828)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_segment_info</tspan><tspan x="168" dy="16" class="zh">段信息</tspan></text>
+    </g>
+    <g transform="translate(798 828)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">xrefs_to</tspan><tspan x="168" dy="16" class="zh">引用到</tspan></text>
+    </g>
+    <g transform="translate(1146 828)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">xrefs_from</tspan><tspan x="168" dy="16" class="zh">引用自</tspan></text>
+    </g>
+    <g transform="translate(102 878)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">search_bytes</tspan><tspan x="168" dy="16" class="zh">搜索字节</tspan></text>
+    </g>
+    <g transform="translate(450 878)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">search_strings</tspan><tspan x="168" dy="16" class="zh">搜索字符串</tspan></text>
+    </g>
+    <g transform="translate(798 878)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">search_imm</tspan><tspan x="168" dy="16" class="zh">搜索立即数</tspan></text>
+    </g>
+    <g transform="translate(1146 878)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_imports</tspan><tspan x="168" dy="16" class="zh">导入表</tspan></text>
+    </g>
+    <g transform="translate(102 928)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_exports</tspan><tspan x="168" dy="16" class="zh">导出表</tspan></text>
+    </g>
+    <g transform="translate(450 928)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">list_entries</tspan><tspan x="168" dy="16" class="zh">入口点</tspan></text>
+    </g>
+    <g transform="translate(798 928)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_cfg</tspan><tspan x="168" dy="16" class="zh">控制流图</tspan></text>
+    </g>
+    <g transform="translate(1146 928)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_predecessors</tspan><tspan x="168" dy="16" class="zh">前驱块</tspan></text>
+    </g>
+    <g transform="translate(102 978)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_successors</tspan><tspan x="168" dy="16" class="zh">后继块</tspan></text>
+    </g>
+    <g transform="translate(102 1034)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">MUTATION</text>
+    </g>
+    <g transform="translate(102 1060)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">patch_bytes</tspan><tspan x="168" dy="16" class="zh">应用补丁</tspan></text>
+    </g>
+    <g transform="translate(450 1060)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">patch_list</tspan><tspan x="168" dy="16" class="zh">补丁列表</tspan></text>
+    </g>
+    <g transform="translate(798 1060)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">bookmark_list</tspan><tspan x="168" dy="16" class="zh">书签列表</tspan></text>
+    </g>
+    <g transform="translate(1146 1060)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">bookmark_set</tspan><tspan x="168" dy="16" class="zh">设置书签</tspan></text>
+    </g>
+    <g transform="translate(102 1110)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">bookmark_delete</tspan><tspan x="168" dy="16" class="zh">删除书签</tspan></text>
+    </g>
+    <g transform="translate(450 1110)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">reanalyze</tspan><tspan x="168" dy="16" class="zh">重新分析</tspan></text>
+    </g>
+    <g transform="translate(798 1110)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">create_function</tspan><tspan x="168" dy="16" class="zh">创建函数</tspan></text>
+    </g>
+    <g transform="translate(1146 1110)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">delete_function</tspan><tspan x="168" dy="16" class="zh">删除函数</tspan></text>
+    </g>
+    <g transform="translate(102 1160)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">make_data</tspan><tspan x="168" dy="16" class="zh">创建数据</tspan></text>
+    </g>
+    <g transform="translate(450 1160)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">undefine</tspan><tspan x="168" dy="16" class="zh">取消定义</tspan></text>
+    </g>
+    <g transform="translate(798 1160)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">rename_var</tspan><tspan x="168" dy="16" class="zh">重命名变量</tspan></text>
+    </g>
+    <g transform="translate(1146 1160)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">retype_var</tspan><tspan x="168" dy="16" class="zh">修改变量类型</tspan></text>
+    </g>
+    <g transform="translate(102 1216)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">BATCH / TREES</text>
+    </g>
+    <g transform="translate(102 1242)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">batch</tspan><tspan x="168" dy="16" class="zh">批量执行</tspan></text>
+    </g>
+    <g transform="translate(450 1242)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">batch_set_names</tspan><tspan x="168" dy="16" class="zh">批量命名</tspan></text>
+    </g>
+    <g transform="translate(798 1242)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">batch_set_comments</tspan><tspan x="168" dy="16" class="zh">批量注释</tspan></text>
+    </g>
+    <g transform="translate(1146 1242)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">batch_set_types</tspan><tspan x="168" dy="16" class="zh">批量类型</tspan></text>
+    </g>
+    <g transform="translate(102 1292)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">batch_decompile</tspan><tspan x="168" dy="16" class="zh">批量反编译</tspan></text>
+    </g>
+    <g transform="translate(450 1292)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">get_func_by_addr</tspan><tspan x="168" dy="16" class="zh">地址查函数</tspan></text>
+    </g>
+    <g transform="translate(798 1292)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">call_tree</tspan><tspan x="168" dy="16" class="zh">调用树</tspan></text>
+    </g>
+    <g transform="translate(1146 1292)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">callers_tree</tspan><tspan x="168" dy="16" class="zh">调用者树</tspan></text>
+    </g>
+    <g transform="translate(102 1348)">
+      <line x1="0" y1="0" x2="1380" y2="0" stroke="url(#rule)" stroke-width="1"/>
+      <text x="0" y="16" class="section">KERNEL DRIVER / STANDALONE</text>
+    </g>
+    <g transform="translate(102 1374)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">kernel_read</tspan><tspan x="168" dy="16" class="zh">内核读取</tspan></text>
+    </g>
+    <g transform="translate(450 1374)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">kernel_modules</tspan><tspan x="168" dy="16" class="zh">内核模块</tspan></text>
+    </g>
+    <g transform="translate(798 1374)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">kernel_module_base</tspan><tspan x="168" dy="16" class="zh">模块基址</tspan></text>
+    </g>
+    <g transform="translate(1146 1374)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">calc</tspan><tspan x="168" dy="16" class="zh">整数计算</tspan></text>
+    </g>
+    <g transform="translate(102 1424)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">disasm_bytes</tspan><tspan x="168" dy="16" class="zh">字节反汇编</tspan></text>
+    </g>
+    <g transform="translate(450 1424)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">kernel_read_values</tspan><tspan x="168" dy="16" class="zh">内核值读取</tspan></text>
+    </g>
+    <g transform="translate(798 1424)" text-anchor="middle">
+      <rect x="0" y="0" width="336" height="42" rx="8" class="cell"/>
+      <text x="168" y="17"><tspan class="tool">ida_to_runtime</tspan><tspan x="168" dy="16" class="zh">IDA 转运行时</tspan></text>
+    </g>
+  </g>
+</svg>

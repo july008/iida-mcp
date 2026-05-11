@@ -20,7 +20,7 @@ INTERNAL_PORT = 13898  # internal worker connections
 
 SERVER_INFO = {
     "name": "iida-mcp",
-    "version": "1.0.0"
+    "version": "0.3.0"
 }
 
 CAPABILITIES = {

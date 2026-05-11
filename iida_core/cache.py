@@ -63,11 +63,20 @@ class IdbCache:
             result['strings'] = strs
 
             # Functions
+            #
+            # Do not use idautils.Functions() here. On large IDA 9.x databases it
+            # can enumerate fewer starts than ida_funcs.get_func_qty() reports,
+            # which makes paged list_functions exports incomplete. getn_func()
+            # walks IDA's function array directly and stays consistent with
+            # get_func_qty().
             funcs = []
-            for ea in idautils.Functions():
+            for i in range(ida_funcs.get_func_qty()):
+                func = ida_funcs.getn_func(i)
+                if not func:
+                    continue
+                ea = func.start_ea
                 name = ida_funcs.get_func_name(ea)
-                func = ida_funcs.get_func(ea)
-                sz = func.size() if func else 0
+                sz = func.size()
                 funcs.append((ea, name, sz))
             result['functions'] = funcs
 

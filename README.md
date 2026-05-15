@@ -48,7 +48,7 @@ plugins/
 
 1. 在 IDA 中打开目标文件。
 2. 点击 `Edit > Plugins > iida-mcp`，或按 `Alt+Shift+I` 启动。
-3. 第一个启动的 IDA 实例监听 `127.0.0.1:13897`；后续 IDA 实例自动作为 Worker 接入。
+3. 第一个启动的 IDA 实例监听 `0.0.0.0:13897`，可通过本机回环地址或主机网卡 IP 访问；后续 IDA 实例自动作为 Worker 接入。
 4. 再次点击菜单项或再次按 `Alt+Shift+I`，关闭当前 IDA 实例中的 iida-mcp 服务/连接。
 5. 单 IDB 时工具参数 `f` 可省略；多 IDB 时先调用 `list_files`，再用返回的 file id 指定 `f`。
 
@@ -58,6 +58,12 @@ plugins/
 
 ```text
 http://127.0.0.1:13897/mcp
+```
+
+如果从其他机器连接，请把 `127.0.0.1` 换成运行 IDA 的主机 IP，例如：
+
+```text
+http://192.168.153.1:13897/mcp
 ```
 
 对支持 HTTP/Streamable HTTP MCP server 的客户端，配置一个远程 MCP server，并把 URL 指向上面的地址即可。
@@ -100,5 +106,5 @@ http://127.0.0.1:13897/mcp
 
 | 端口 | 用途 |
 |------|------|
-| `13897` | MCP HTTP 服务 |
-| `13898` | 内部 Worker 通信 |
+| `13897` | MCP HTTP 服务，监听所有网卡 |
+| `13898` | 内部 Worker 通信，仅本机 |

@@ -5,19 +5,20 @@ import time
 import os
 
 from . import protocol
-from .server import INTERNAL_PORT, MCP_PORT, McpServer
+from .server import INTERNAL_PORT, MCP_PORT, McpServer, try_bind_master, try_election_lock
 
 
 class Worker:
     """Runs inside a non-master IDA instance."""
 
-    def __init__(self, file_info, local_handler):
+    def __init__(self, file_info, local_handler, on_promoted=None):
         """
         file_info: dict with fid, name, arch, bits, path
         local_handler: function(tool, args) -> result
         """
         self.file_info = file_info
         self.local_handler = local_handler
+        self.on_promoted = on_promoted
         self._conn = None
         self._running = False
         self._thread = None
@@ -25,6 +26,7 @@ class Worker:
         self._master_server = None
         self._call_port = 0
         self._call_sock = None
+        self._call_thread = None
 
     def start(self):
         self._running = True
@@ -48,9 +50,18 @@ class Worker:
                 pass
         if self._call_sock:
             try:
+                self._call_sock.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
+            try:
                 self._call_sock.close()
             except:
                 pass
+            self._call_sock = None
+        if self._thread:
+            self._thread.join(timeout=2.0)
+        if self._call_thread:
+            self._call_thread.join(timeout=2.0)
 
     def is_promoted(self):
         return self._promoted
@@ -65,8 +76,9 @@ class Worker:
         self._call_sock.bind(('127.0.0.1', 0))  # OS picks a free port
         self._call_port = self._call_sock.getsockname()[1]
         self._call_sock.listen(16)
-        t = threading.Thread(target=self._accept_calls, daemon=True)
-        t.start()
+        self._call_sock.settimeout(1.0)
+        self._call_thread = threading.Thread(target=self._accept_calls, daemon=True)
+        self._call_thread.start()
 
     def _accept_calls(self):
         """Accept incoming call connections from master's router."""
@@ -75,6 +87,8 @@ class Worker:
                 conn, addr = self._call_sock.accept()
                 t = threading.Thread(target=self._handle_call_conn, args=(conn,), daemon=True)
                 t.start()
+            except socket.timeout:
+                continue
             except OSError:
                 break
 
@@ -97,15 +111,17 @@ class Worker:
         while self._running:
             try:
                 self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self._conn.settimeout(2.0)
                 self._conn.connect(('127.0.0.1', INTERNAL_PORT))
+                self._conn.settimeout(1.0)
                 self._register()
                 self._loop()
-            except (ConnectionRefusedError, OSError):
+            except (ConnectionRefusedError, OSError, TimeoutError):
                 if not self._running:
                     break
-                time.sleep(0.5)
                 if self._try_become_master():
                     break
+                time.sleep(0.5)
             except Exception:
                 if not self._running:
                     break
@@ -129,14 +145,22 @@ class Worker:
     def _loop(self):
         """Control connection loop - only handles control messages (promote, heartbeat)."""
         while self._running:
-            msg = protocol.recv_msg(self._conn)
+            try:
+                msg = protocol.recv_msg(self._conn)
+            except socket.timeout:
+                if not self._heartbeat_master():
+                    self._promote_until(deadline=time.time() + 10.0)
+                    break
+                continue
+            except OSError:
+                msg = None
             if msg is None:
-                self._try_become_master()
+                self._promote_until(deadline=time.time() + 10.0)
                 break
 
             mt = msg.get('t')
             if mt == protocol.MSG_PROMOTE:
-                self._try_become_master()
+                self._promote_until(deadline=time.time() + 10.0, handoff_port=msg.get('handoff_port', 0))
                 break
             elif mt == protocol.MSG_HEARTBEAT:
                 try:
@@ -152,20 +176,21 @@ class Worker:
         except Exception as ex:
             return {'e': str(ex)}
 
-    def _try_become_master(self):
+    def _try_become_master(self, handoff_port=0):
         """Attempt to take over as master."""
         from . import tools as tools_module
+        election_lock = try_election_lock()
+        if not election_lock:
+            return False
         try:
             if self._conn:
                 self._conn.close()
                 self._conn = None
 
-            time.sleep(0.2)
-
-            if not _port_available(MCP_PORT):
+            if not (_port_available(MCP_PORT) and _port_available(INTERNAL_PORT)):
                 return False
 
-            self._master_server = McpServer(tools_module, self.local_handler)
+            self._master_server = McpServer(tools_module, self.local_handler, election_lock=election_lock)
             from .registry import FileEntry
             entry = FileEntry(
                 fid=self.file_info['fid'],
@@ -180,17 +205,71 @@ class Worker:
             self._master_server.registry.register(entry)
             self._master_server.start()
             self._promoted = True
+            self._emit_promoted()
+            self._notify_promoted(handoff_port)
+            election_lock = None
             return True
         except Exception:
             return False
+        finally:
+            try:
+                if election_lock:
+                    election_lock.close()
+            except:
+                pass
+
+    def _heartbeat_master(self):
+        try:
+            protocol.send_msg(self._conn, {'t': protocol.MSG_HEARTBEAT})
+            msg = protocol.recv_msg(self._conn)
+            return bool(msg and msg.get('t') == protocol.MSG_HEARTBEAT)
+        except:
+            return False
+
+    def _notify_promoted(self, handoff_port):
+        if not handoff_port:
+            return
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(0.5)
+            s.connect(('127.0.0.1', int(handoff_port)))
+            protocol.send_msg(s, {'t': protocol.MSG_PROMOTED, 'fid': self.file_info['fid']})
+        except:
+            pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
+
+    def _emit_promoted(self):
+        if not self.on_promoted:
+            return
+        try:
+            self.on_promoted(self)
+        except:
+            pass
+
+    def _promote_until(self, deadline, handoff_port=0):
+        while self._running and time.time() < deadline:
+            if self._try_become_master(handoff_port):
+                return True
+            if not try_bind_master():
+                return False
+            time.sleep(0.3)
+        return False
 
 
 def _port_available(port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(0.5)
         s.connect(('127.0.0.1', port))
-        s.close()
         return False  # someone is listening
     except (ConnectionRefusedError, OSError, TimeoutError):
         return True
+    finally:
+        try:
+            s.close()
+        except:
+            pass

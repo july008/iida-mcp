@@ -34,6 +34,30 @@ class _SuppressDialogs(ida_kernwin.UI_Hooks):
 _dialog_suppressor = None
 
 
+def _reload_core_modules():
+    """Reload iida_core modules so plugin restart picks up local edits."""
+    import importlib
+
+    for name in (
+        'iida_core.thread_safe',
+        'iida_core.protocol',
+        'iida_core.registry',
+        'iida_core.cache',
+        'iida_core.kdriver',
+        'iida_core.router',
+        'iida_core.server',
+        'iida_core.worker',
+        'iida_core.tools',
+    ):
+        mod = sys.modules.get(name)
+        if not mod:
+            continue
+        try:
+            importlib.reload(mod)
+        except Exception as ex:
+            ida_kernwin.msg(f"[iida-mcp] reload {name} failed: {ex}\n")
+
+
 def _get_file_id():
     """Generate stable 8-char file_id from IDB path (the .i64/.idb file, truly unique)."""
     idb_path = idaapi.get_path(idaapi.PATH_TYPE_IDB)
@@ -115,7 +139,9 @@ class IdaMcpPlugMod(idaapi.plugmod_t):
             ida_kernwin.msg("[iida-mcp] Not connected\n")
 
     def _init_network(self):
-        from iida_core.server import McpServer, try_bind_master, MCP_PORT
+        _reload_core_modules()
+
+        from iida_core.server import McpServer, try_bind_master, try_election_lock, MCP_PORT
         from iida_core.worker import Worker
         from iida_core.registry import FileEntry
         from iida_core import tools
@@ -128,26 +154,46 @@ class IdaMcpPlugMod(idaapi.plugmod_t):
         cache = get_cache()
         cache.ensure_built()
 
-        if try_bind_master():
-            self._server = McpServer(tools, tools.execute_tool)
-            entry = FileEntry(
-                fid=file_info['fid'],
-                name=file_info['name'],
-                arch=file_info['arch'],
-                bits=file_info['bits'],
-                path=file_info['path'],
-                pid=os.getpid(),
-                conn=None,
-                local=True
-            )
-            self._server.registry.register(entry)
-            self._server.start()
+        election_lock = try_election_lock()
+        become_master = election_lock is not None and try_bind_master()
+        try:
+            if become_master:
+                self._server = McpServer(tools, tools.execute_tool, election_lock=election_lock)
+                entry = FileEntry(
+                    fid=file_info['fid'],
+                    name=file_info['name'],
+                    arch=file_info['arch'],
+                    bits=file_info['bits'],
+                    path=file_info['path'],
+                    pid=os.getpid(),
+                    conn=None,
+                    local=True
+                )
+                self._server.registry.register(entry)
+                self._server.start()
+                election_lock = None
+        finally:
+            if election_lock:
+                try:
+                    election_lock.close()
+                except:
+                    pass
+
+        if become_master:
             bt = cache.get_build_time()
             ida_read(lambda: ida_kernwin.msg(
                 f"[iida-mcp] Master on :{MCP_PORT} | {file_info['name']} ({file_info['fid']}) | cache {bt:.1f}s\n"
             ))
         else:
-            self._worker = Worker(file_info, tools.execute_tool)
+            def on_promoted(worker):
+                srv = worker.get_master_server()
+                entries = srv.registry.list_all() if srv else []
+                names = ', '.join(e.name for e in entries)
+                ida_read(lambda: ida_kernwin.msg(
+                    f"[iida-mcp] Promoted to Master :{MCP_PORT} | files: {names}\n"
+                ))
+
+            self._worker = Worker(file_info, tools.execute_tool, on_promoted=on_promoted)
             self._worker.start()
             bt = cache.get_build_time()
             ida_read(lambda: ida_kernwin.msg(

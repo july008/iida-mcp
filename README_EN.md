@@ -48,7 +48,7 @@ plugins/
 
 1. Open a target file in IDA.
 2. Start the plugin from `Edit > Plugins > iida-mcp`, or press `Alt+Shift+I`.
-3. The first active IDA instance listens on `127.0.0.1:13897`; later instances join as Workers.
+3. The first active IDA instance listens on `0.0.0.0:13897`, so it can be reached through loopback or a host network-interface IP; later instances join as Workers.
 4. Trigger the menu item or hotkey again to stop iida-mcp in the current IDA instance.
 5. With one IDB, the `f` parameter can be omitted. With multiple IDBs, call `list_files` and pass the returned file id as `f`.
 
@@ -58,6 +58,12 @@ Endpoint:
 
 ```text
 http://127.0.0.1:13897/mcp
+```
+
+When connecting from another machine, replace `127.0.0.1` with the IDA host IP, for example:
+
+```text
+http://192.168.153.1:13897/mcp
 ```
 
 For clients that support HTTP/Streamable HTTP MCP servers, add a remote MCP server and point it to the endpoint above.
@@ -100,5 +106,5 @@ A prebuilt `iida-mcp-ioctl.sys` is included under `driver/`. Loading it requires
 
 | Port | Purpose |
 |------|---------|
-| `13897` | MCP HTTP server |
-| `13898` | Internal Worker communication |
+| `13897` | MCP HTTP server, listens on all network interfaces |
+| `13898` | Internal Worker communication, loopback only |

@@ -8,6 +8,7 @@ MFF_READ = ida_kernwin.MFF_READ
 MFF_WRITE = ida_kernwin.MFF_WRITE
 
 _batch_fn = None  # lazy-init: callable(int) -> old_value, or False if unavailable
+IDA_SYNC_TIMEOUT = 60.0
 
 
 def _get_batch_fn():
@@ -63,7 +64,8 @@ def run_in_ida(fn, *args, write=False):
 
     mode = MFF_WRITE if write else MFF_READ
     ida_kernwin.execute_sync(_run, mode)
-    ev.wait()
+    if not ev.wait(IDA_SYNC_TIMEOUT):
+        raise TimeoutError(f'IDA main thread did not run callback within {IDA_SYNC_TIMEOUT}s')
     if exc[0]:
         raise exc[0]
     return result[0]

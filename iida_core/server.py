@@ -2,6 +2,7 @@
 import json
 import threading
 import socket
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 from urllib.parse import urlparse
@@ -14,9 +15,12 @@ from .router import Router
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle each request in a new thread to avoid blocking."""
     daemon_threads = True
+    allow_reuse_address = True
 
+MCP_BIND_HOST = '0.0.0.0'
 MCP_PORT = 13897
 INTERNAL_PORT = 13898  # internal worker connections
+ELECTION_PORT = 13899
 
 SERVER_INFO = {
     "name": "iida-mcp",
@@ -132,10 +136,11 @@ class McpHandler(BaseHTTPRequestHandler):
 class McpServer:
     """Master MCP server managing registry, router, and HTTP."""
 
-    def __init__(self, tools_module, local_handler):
+    def __init__(self, tools_module, local_handler, election_lock=None):
         self.registry = Registry()
         self.router = Router(self.registry, local_handler)
         self.tools_module = tools_module
+        self._election_lock = election_lock
         self._http = None
         self._http_thread = None
         self._internal_sock = None
@@ -149,17 +154,58 @@ class McpServer:
 
     def stop(self):
         self._running = False
+        conns = self.registry.all_conns()
+        handoff_sock, handoff_port = _make_handoff_socket() if conns else (None, 0)
         if self._http:
-            self._http.shutdown()
+            try:
+                self._http.shutdown()
+            except:
+                pass
+            try:
+                self._http.server_close()
+            except:
+                pass
         if self._internal_sock:
+            try:
+                self._internal_sock.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
             try:
                 self._internal_sock.close()
             except:
                 pass
-        self._notify_workers_shutdown()
+        if self._http_thread:
+            self._http_thread.join(timeout=2.0)
+        if self._internal_thread:
+            self._internal_thread.join(timeout=2.0)
+        self._http = None
+        self._internal_sock = None
+        if self._election_lock:
+            try:
+                self._election_lock.close()
+            except:
+                pass
+            self._election_lock = None
+        self._notify_workers_shutdown(conns, handoff_port)
+        for conn in conns:
+            try:
+                conn.shutdown(socket.SHUT_RDWR)
+            except:
+                pass
+            try:
+                conn.close()
+            except:
+                pass
+        if conns:
+            _wait_for_handoff_or_master(handoff_sock, INTERNAL_PORT, 3.0)
+        if handoff_sock:
+            try:
+                handoff_sock.close()
+            except:
+                pass
 
     def _start_http(self):
-        self._http = ThreadedHTTPServer(('127.0.0.1', MCP_PORT), McpHandler)
+        self._http = ThreadedHTTPServer((MCP_BIND_HOST, MCP_PORT), McpHandler)
         self._http.mcp_server = self
         self._http_thread = threading.Thread(target=self._http.serve_forever, daemon=True)
         self._http_thread.start()
@@ -169,6 +215,7 @@ class McpServer:
         self._internal_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._internal_sock.bind(('127.0.0.1', INTERNAL_PORT))
         self._internal_sock.listen(16)
+        self._internal_sock.settimeout(1.0)
         self._internal_thread = threading.Thread(target=self._accept_workers, daemon=True)
         self._internal_thread.start()
 
@@ -178,6 +225,8 @@ class McpServer:
                 conn, addr = self._internal_sock.accept()
                 t = threading.Thread(target=self._handle_worker, args=(conn,), daemon=True)
                 t.start()
+            except socket.timeout:
+                continue
             except OSError:
                 break
 
@@ -219,11 +268,11 @@ class McpServer:
             except:
                 pass
 
-    def _notify_workers_shutdown(self):
+    def _notify_workers_shutdown(self, conns=None, handoff_port=0):
         """Notify all workers to elect a new master."""
-        for conn in self.registry.all_conns():
+        for conn in conns if conns is not None else self.registry.all_conns():
             try:
-                protocol.send_msg(conn, {'t': protocol.MSG_PROMOTE})
+                protocol.send_msg(conn, {'t': protocol.MSG_PROMOTE, 'handoff_port': handoff_port})
             except:
                 pass
 
@@ -323,11 +372,83 @@ def _json_resource(uri, data):
 def try_bind_master():
     """Check if we should become master by trying to connect to existing master.
     Returns True if no master exists (we should become master)."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1.0)
+        s.settimeout(0.5)
         s.connect(('127.0.0.1', INTERNAL_PORT))
-        s.close()
-        return False  # connected => master exists, we are worker
+        return False
     except (ConnectionRefusedError, OSError, TimeoutError):
-        return True  # no master, we become master
+        return True
+    finally:
+        try:
+            s.close()
+        except:
+            pass
+
+
+def try_election_lock():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+    try:
+        s.bind(('127.0.0.1', ELECTION_PORT))
+        s.listen(1)
+        return s
+    except OSError:
+        try:
+            s.close()
+        except:
+            pass
+        return None
+
+
+def _make_handoff_socket():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(('127.0.0.1', 0))
+        s.listen(1)
+        s.settimeout(0.2)
+        return s, s.getsockname()[1]
+    except OSError:
+        try:
+            s.close()
+        except:
+            pass
+        return None, 0
+
+
+def _wait_for_handoff_or_master(handoff_sock, master_port, timeout):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if handoff_sock:
+            try:
+                conn, _addr = handoff_sock.accept()
+                try:
+                    conn.settimeout(0.2)
+                    msg = protocol.recv_msg(conn)
+                    if msg and msg.get('t') == protocol.MSG_PROMOTED:
+                        return True
+                finally:
+                    try:
+                        conn.close()
+                    except:
+                        pass
+            except socket.timeout:
+                pass
+            except OSError:
+                handoff_sock = None
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.1)
+        try:
+            s.connect(('127.0.0.1', master_port))
+            return True
+        except (ConnectionRefusedError, OSError, TimeoutError):
+            pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
+        time.sleep(0.03)
+    return False

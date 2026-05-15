@@ -66,58 +66,55 @@ _BATCH_OP = {
 
 TOOLS_SCHEMA = [
     _t("list_files", "List connected IDA instances"),
-    _t("get_info", "IDB info: arch, bits, entry, size, filename", {"f": _F}),
+    _t("get_info", "IDB info: filename, paths, arch, bits, entry, address range, segment/function counts, and loader type", {"f": _F}),
     _t("read_file_bytes", "Read raw original file bytes at file offset", {"f": _F, "off": {"type":"integer","description":"file offset"}, "sz": {"type":"integer","description":"size"}}),
     _t("addr_to_fileoff", "Convert IDB address to raw file offset", {"f": _F, "a": _A}),
-    _t("get_filepath", "Get original file path on disk", {"f": _F}),
     _t("parse_pe", "Parse PE header from raw file", {"f": _F}),
     _t("parse_elf", "Parse ELF header from raw file", {"f": _F}),
+    _t("get_cursor", "Get the current IDA UI cursor address", {"f": _F}),
+    _t("get_cursor_func", "Get the function under the current IDA UI cursor", {"f": _F}),
     _t("list_functions", "List functions (paginated, filterable)", {"f": _F, "q": _Q, "off": _OFF, "n": _N}),
     _t("get_func_info", "Get function info: name, start, end, size, frame", {"f": _F, "a": _A}),
+    _t("get_func_by_name", "Find a function by exact name", {"f": _F, "name": {"type":"string","description":"function name"}}),
     _t("decompile", "Decompile function to pseudocode", {"f": _F, "a": _A}),
     _t("get_func_type", "Get function prototype/type declaration", {"f": _F, "a": _A}),
     _t("get_callers", "List functions that call this address", {"f": _F, "a": _A}),
     _t("get_callees", "List functions called by this function", {"f": _F, "a": _A}),
-    _t("get_local_vars", "List decompiled function local variables", {"f": _F, "a": _A}),
-    _t("get_func_args", "List decompiled function arguments", {"f": _F, "a": _A}),
+    _t("get_vars", "List decompiled function variables and arguments: [name, type, kind, location]", {"f": _F, "a": _A}),
     _t("disassemble", "Disassemble N instructions at address", {"f": _F, "a": _A, "n": _N}),
     _t("read_bytes", "Read bytes from IDB at address", {"f": _F, "a": _A, "sz": {"type":"integer","description":"size"}}),
-    _t("write_bytes", "Write bytes to IDB at address", {"f": _F, "a": _A, "hex": {"type":"string","description":"hex bytes"}}),
+    _t("read_value", "Read an integer value from IDB memory. size is 1, 2, 4, or 8 bytes. Returns [dec, hex].", {"f": _F, "a": _A, "sz": {"type":"integer","description":"1/2/4/8 bytes"}}),
+    _t("read_string", "Read a string literal from IDB at address", {"f": _F, "a": _A, "strtype": {"type":"integer","description":"IDA STRTYPE_* constant; default uses IDA default","optional":True}, "max": {"type":"integer","description":"max bytes to read","optional":True}}),
     _t("get_head", "Get item head address containing the given address", {"f": _F, "a": _A}),
     _t("get_name", "Get name/label at address", {"f": _F, "a": _A}),
     _t("set_name", "Set name/label at address", {"f": _F, "a": _A, "name": {"type":"string","description":"new name"}}),
     _t("get_comment", "Get comment at address", {"f": _F, "a": _A, "rep": {"type":"integer","description":"1=repeatable","optional":True}}),
     _t("set_comment", "Set comment at address", {"f": _F, "a": _A, "cmt": {"type":"string","description":"comment text"}, "rep": {"type":"integer","description":"1=repeatable","optional":True}}),
     _t("search_names", "Search all names/labels by substring", {"f": _F, "q": {"type":"string","description":"substring"}, "n": _N}),
+    _t("list_globals", "List named non-function globals (paginated, filterable)", {"f": _F, "q": _Q, "off": _OFF, "n": _N}),
+    _t("read_global", "Read a named global value", {"f": _F, "name": {"type":"string","description":"global name"}, "sz": {"type":"integer","description":"override byte size","optional":True}}),
     _t("get_type", "Get type info at address", {"f": _F, "a": _A}),
     _t("set_type", "Apply C type declaration at address", {"f": _F, "a": _A, "decl": {"type":"string","description":"C type declaration"}}),
-    _t("list_structs", "List struct types", {"f": _F, "q": _Q}),
-    _t("get_struct", "Get struct definition by name", {"f": _F, "name": {"type":"string","description":"struct name"}}),
-    _t("get_struct_details", "Get struct declaration plus member list with offsets/types/comments. Use this when get_struct omits enum/type detail.", {"f": _F, "name": {"type":"string","description":"struct name"}}),
+    _t("set_c_decls", "Parse one or more C typedef/struct/enum declarations into local types", {"f": _F, "decl": {"type":"string","description":"C declarations"}}),
+    _t("list_types", "List local types. kind may be struct, enum, type, or all.", {"f": _F, "q": _Q, "kind": {"type":"string","description":"struct/enum/type/all (default all)","optional":True}}),
+    _t("get_type_decl", "Get a local type declaration plus member details when available.", {"f": _F, "name": {"type":"string","description":"local type name"}}),
     _t("read_struct", "Read memory as an IDA struct and parse fields. source=idb reads IDB bytes, source=kernel reads runtime kernel memory.", {"f": _F, "name": {"type":"string","description":"struct name"}, "a": _A, "source": {"type":"string","description":"idb/kernel (default idb)","optional":True}, "enums": {"type":"integer","description":"include enum candidates for integer fields (default 1)","optional":True}}),
-    _t("set_struct", "Create or update struct from C declaration", {"f": _F, "decl": {"type":"string","description":"C struct declaration"}}),
-    _t("delete_struct", "Delete struct by name", {"f": _F, "name": {"type":"string","description":"struct name"}}),
-    _t("list_enums", "List enum types", {"f": _F, "q": _Q}),
-    _t("get_enum", "Get enum definition by name", {"f": _F, "name": {"type":"string","description":"enum name"}}),
+    _t("delete_type", "Delete a local type by name: struct, enum, typedef, or alias", {"f": _F, "name": {"type":"string","description":"local type name"}}),
     _t("find_enum_value", "Find enum constants matching a numeric value, including bitmask flag candidates.", {"f": _F, "val": {"type":"string","description":"numeric value, e.g. 3 or 0x15F0"}, "q": {"type":"string","description":"optional enum/name substring filter","optional":True}, "n": _N}),
-    _t("set_enum", "Create or update enum from C declaration", {"f": _F, "decl": {"type":"string","description":"C enum declaration"}}),
-    _t("list_local_types", "List all local types in type library", {"f": _F, "q": _Q}),
-    _t("get_local_type", "Get local type by ordinal number", {"f": _F, "ord": {"type":"integer","description":"ordinal"}}),
-    _t("set_local_type", "Add local type from C declaration", {"f": _F, "decl": {"type":"string","description":"C declaration"}}),
     _t("list_segments", "List all segments/sections", {"f": _F}),
     _t("get_segment_info", "Get segment info for address", {"f": _F, "a": _A}),
     _t("xrefs_to", "Get all cross-references TO this address", {"f": _F, "a": _A}),
     _t("xrefs_from", "Get all cross-references FROM this address", {"f": _F, "a": _A}),
+    _t("xrefs_to_field", "Find xrefs to a struct field by struct and field name", {"f": _F, "struct": {"type":"string","description":"struct name"}, "field": {"type":"string","description":"field name"}}),
     _t("search_bytes", "Search for byte pattern (e.g. '48 8B ?? 90')", {"f": _F, "pat": {"type":"string","description":"hex pattern with ?? wildcards"}, "start": {"type":"string","description":"start addr","optional":True}, "dir": {"type":"integer","description":"1=down 0=up","optional":True}}),
     _t("search_strings", "Search string list by substring", {"f": _F, "q": _Q, "off": _OFF, "n": _N}),
     _t("search_imm", "Search little-endian encoded immediate/value bytes using minimal width (1/2/4/8). Example val=15F0 searches F0 15.", {"f": _F, "val": {"type":"string","description":"hex value string, e.g. 15F0 or 0x15F0"}}),
     _t("list_imports", "List import table", {"f": _F}),
     _t("list_exports", "List export table", {"f": _F}),
     _t("list_entries", "List entry points", {"f": _F}),
-    _t("get_cfg", "Get function control flow graph (nodes + edges)", {"f": _F, "a": _A}),
-    _t("get_predecessors", "Get predecessor basic blocks", {"f": _F, "a": _A}),
-    _t("get_successors", "Get successor basic blocks", {"f": _F, "a": _A}),
+    _t("get_cfg", "Get function control flow graph as basic block nodes and edges", {"f": _F, "a": _A}),
     _t("patch_bytes", "Patch bytes in IDB at address (modifies database)", {"f": _F, "a": _A, "hex": {"type":"string","description":"hex bytes to write"}}),
+    _t("patch_asm", "Assemble one or more instructions with keystone and patch bytes at address", {"f": _F, "a": _A, "asm": {"type":"string","description":"assembly text, e.g. nop or mov rax, 1"}}),
     _t("patch_list", "List all patched bytes in IDB", {"f": _F}),
     _t("bookmark_list", "List all bookmarks", {"f": _F}),
     _t("bookmark_set", "Set bookmark at address", {"f": _F, "a": _A, "desc": {"type":"string","description":"description"}}),
@@ -129,11 +126,12 @@ TOOLS_SCHEMA = [
     _t("undefine", "Undefine (make unknown) bytes at address", {"f": _F, "a": _A, "sz": {"type":"integer","description":"size"}}),
     _t("rename_var", "Rename a decompiled local variable", {"f": _F, "a": _A, "old": {"type":"string","description":"old name"}, "new": {"type":"string","description":"new name"}}),
     _t("retype_var", "Change type of a decompiled variable", {"f": _F, "a": _A, "var": {"type":"string","description":"var name"}, "decl": {"type":"string","description":"C type"}}),
+    _t("list_frame_vars", "List a function's stack frame variables: [offset, size, name, type]", {"f": _F, "a": _A}),
+    _t("create_frame_var", "Create a stack frame variable at byte offset", {"f": _F, "a": _A, "name": {"type":"string","description":"variable name"}, "off": {"type":"integer","description":"frame byte offset"}, "decl": {"type":"string","description":"C type (default unsigned char)","optional":True}}),
+    _t("delete_frame_var", "Delete a stack frame variable by name", {"f": _F, "a": _A, "name": {"type":"string","description":"variable name"}}),
+    _t("rename_frame_var", "Rename a stack frame variable", {"f": _F, "a": _A, "old": {"type":"string","description":"old name"}, "new": {"type":"string","description":"new name"}}),
+    _t("retype_frame_var", "Change a stack frame variable type", {"f": _F, "a": _A, "name": {"type":"string","description":"variable name"}, "decl": {"type":"string","description":"C type"}}),
     _t("batch", "Batch execute multiple tools in one call", {"f": {"type":"string","description":"default file_id","optional":True}, "ops": {"type":"array","description":"[[tool_name,{args}],...]","items":_BATCH_OP}}),
-    _t("batch_set_names", "Batch rename: set names at multiple addresses in one call", {"f": _F, "names": {"type":"array","description":"[[hex_addr, name], ...]","items":_STR_PAIR}}),
-    _t("batch_set_comments", "Batch comment: set comments at multiple addresses in one call", {"f": _F, "comments": {"type":"array","description":"[[hex_addr, text, rep?], ...]","items":_COMMENT_ITEM}}),
-    _t("batch_set_types", "Batch set types at multiple addresses in one call", {"f": _F, "types": {"type":"array","description":"[[hex_addr, c_decl], ...]","items":_STR_PAIR}}),
-    _t("batch_decompile", "Decompile multiple functions in one call", {"f": _F, "addrs": {"type":"array","description":"[hex_addr, ...]","items":{"type":"string"}}}),
     _t("get_func_by_addr", "Find which function contains the given address (any addr, not just func start)", {"f": _F, "a": _A}),
     _t("call_tree", "Build forward call tree (recursive callees from function)", {"f": _F, "a": _A, "depth": {"type":"integer","description":"max depth (default 5)","optional":True}}),
     _t("callers_tree", "Build reverse call tree (recursive callers of function)", {"f": _F, "a": _A, "depth": {"type":"integer","description":"max depth (default 5)","optional":True}}),
@@ -156,6 +154,20 @@ def _ea(s):
     if isinstance(s, int):
         return s
     return int(s, 16)
+
+
+def _num(s):
+    """Parse a user-facing numeric value: decimal by default, hex with 0x or A-F."""
+    if isinstance(s, int):
+        return s
+    text = str(s).strip().replace('_', '')
+    if not text:
+        raise ValueError('empty numeric value')
+    if text.lower().startswith(('0x', '0o', '0b')):
+        return int(text, 0)
+    if any(c in text.lower() for c in 'abcdef'):
+        return int(text, 16)
+    return int(text, 10)
 
 
 def _hex(val):
@@ -357,10 +369,19 @@ def _get_input_path():
 
 def _info(args):
     def _impl():
+        input_path = ida_nalt.get_input_file_path()
+        idb_path = ''
+        try:
+            idb_path = idaapi.get_path(idaapi.PATH_TYPE_IDB)
+        except:
+            pass
         procname = ida_ida.inf_get_procname()
         is64 = ida_ida.inf_is_64bit()
         is32 = ida_ida.inf_is_32bit_exactly() if hasattr(ida_ida, 'inf_is_32bit_exactly') else not is64
         return {
+            'file': os.path.basename(input_path),
+            'path': input_path,
+            'idb': idb_path,
             'proc': procname,
             'bits': 64 if is64 else (32 if is32 else 16),
             'entry': _hex(ida_ida.inf_get_start_ea()),
@@ -374,9 +395,33 @@ def _info(args):
     return read(_impl)
 
 
+def _cursor(args):
+    def _impl():
+        return _hex(idaapi.get_screen_ea())
+    return read(_impl)
+
+
+def _cursor_func(args):
+    def _impl():
+        ea = idaapi.get_screen_ea()
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+        return [
+            _hex(func.start_ea),
+            ida_funcs.get_func_name(func.start_ea),
+            func.size()
+        ]
+    return read(_impl)
+
+
 def _fraw(args):
     off = args.get('off', 0)
     sz = min(args.get('sz', 256), 0x100000)  # cap at 1MB
+    if off < 0:
+        return {'e': 'off must be non-negative'}
+    if sz <= 0:
+        return ''
     path = read(_get_input_path)
     with open(path, 'rb') as fp:
         fp.seek(off)
@@ -506,6 +551,8 @@ def _fl(args):
     q = args.get('q', '')
     off = args.get('off', 0)
     n = min(args.get('n', 100), 1000)
+    if n <= 0:
+        return []
     cache = get_cache()
     data = cache.get_functions(q, off, n)
     eas = [ea for ea, _, _ in data]
@@ -544,6 +591,23 @@ def _fi(args):
     return read(_impl)
 
 
+def _fbn(args):
+    name = args['name']
+    def _impl():
+        ea = ida_name.get_name_ea(idaapi.BADADDR, name)
+        if ea == idaapi.BADADDR:
+            return {'e': 'not found'}
+        func = ida_funcs.get_func(ea)
+        if not func or func.start_ea != ea:
+            return {'e': 'not a function', 'addr': _hex(ea)}
+        return [
+            _hex(func.start_ea),
+            ida_funcs.get_func_name(func.start_ea),
+            func.size()
+        ]
+    return read(_impl)
+
+
 def _dec(args):
     ea = _ea(args['a'])
     def _impl():
@@ -564,11 +628,19 @@ def _decl(args):
     ea = _ea(args['a'])
     def _impl():
         tif = ida_typeinf.tinfo_t()
-        if ida_typeinf.guess_tinfo(tif, ea):
+        if idaapi.get_tinfo(tif, ea) or ida_typeinf.guess_tinfo(tif, ea):
             name = ida_funcs.get_func_name(ea) or ''
             return tif.dstr() if not name else str(tif) + ' ' + name
         return ''
     return read(_impl)
+
+
+def _sft(args):
+    ea = _ea(args['a'])
+    decl = args['decl']
+    def _impl():
+        return 'ok' if _apply_type_decl(ea, decl) else 'fail'
+    return write(_impl)
 
 
 def _cf(args):
@@ -610,39 +682,43 @@ def _ct(args):
     return read(_impl)
 
 
+def _decompiled_vars(ea):
+    try:
+        import ida_hexrays
+        cfunc = ida_hexrays.decompile(ea)
+        if not cfunc:
+            return []
+        results = []
+        for v in cfunc.lvars:
+            kind = 'arg' if v.is_arg_var else 'local'
+            try:
+                loc = v.location.dstr() if v.is_arg_var else (v.location.stkoff() if v.is_stk_var() else -1)
+            except:
+                loc = ''
+            results.append([v.name, str(v.tif), kind, loc])
+        return results
+    except:
+        return []
+
+
+def _vars(args):
+    ea = _ea(args['a'])
+    return read(lambda: _decompiled_vars(ea))
+
+
 def _fv(args):
     ea = _ea(args['a'])
     def _impl():
-        try:
-            import ida_hexrays
-            cfunc = ida_hexrays.decompile(ea)
-            if not cfunc:
-                return []
-            results = []
-            for v in cfunc.lvars:
-                if not v.is_arg_var:
-                    results.append([v.name, str(v.tif), v.location.stkoff() if v.is_stk_var() else -1])
-            return results
-        except:
-            return []
+        rows = _decompiled_vars(ea)
+        return [[name, typ, loc] for name, typ, kind, loc in rows if kind == 'local']
     return read(_impl)
 
 
 def _fa(args):
     ea = _ea(args['a'])
     def _impl():
-        try:
-            import ida_hexrays
-            cfunc = ida_hexrays.decompile(ea)
-            if not cfunc:
-                return []
-            results = []
-            for v in cfunc.lvars:
-                if v.is_arg_var:
-                    results.append([v.name, str(v.tif), v.location.dstr()])
-            return results
-        except:
-            return []
+        rows = _decompiled_vars(ea)
+        return [[name, typ, loc] for name, typ, kind, loc in rows if kind == 'arg']
     return read(_impl)
 
 
@@ -651,6 +727,8 @@ def _fa(args):
 def _dis(args):
     ea = _ea(args['a'])
     n = min(args.get('n', 32), 512)
+    if n <= 0:
+        return []
     def _impl():
         results = []
         cur = ea
@@ -679,9 +757,73 @@ def _dis(args):
 def _rb(args):
     ea = _ea(args['a'])
     sz = min(args.get('sz', 16), 0x100000)
+    if sz <= 0:
+        return ''
     def _impl():
         data = ida_bytes.get_bytes(ea, sz)
         return data.hex() if data else ''
+    return read(_impl)
+
+
+def _read_int(args, size):
+    ea = _ea(args['a'])
+    if size not in (1, 2, 4, 8):
+        return {'e': 'sz must be 1, 2, 4, or 8'}
+    def _impl():
+        if size == 1:
+            val = idc.get_wide_byte(ea)
+        elif size == 2:
+            val = idc.get_wide_word(ea)
+        elif size == 4:
+            val = idc.get_wide_dword(ea)
+        else:
+            val = idc.get_qword(ea)
+        return [val, _hex(val)]
+    return read(_impl)
+
+
+def _rval(args):
+    return _read_int(args, args.get('sz', 8))
+
+
+def _rbyte(args):
+    return _read_int(args, 1)
+
+
+def _rword(args):
+    return _read_int(args, 2)
+
+
+def _rdword(args):
+    return _read_int(args, 4)
+
+
+def _rqword(args):
+    return _read_int(args, 8)
+
+
+def _rstr(args):
+    ea = _ea(args['a'])
+    strtype = args.get('strtype')
+    maxlen = min(args.get('max', 4096), 0x100000)
+    def _impl():
+        if strtype is not None:
+            st = strtype
+        else:
+            try:
+                st = ida_nalt.get_default_str_type()
+            except:
+                st = getattr(idc, 'STRTYPE_C', getattr(ida_nalt, 'STRTYPE_C', 0))
+        data = idc.get_strlit_contents(ea, maxlen, st)
+        if data is None:
+            raw = ida_bytes.get_bytes(ea, maxlen) or b''
+            nul = raw.find(b'\x00')
+            if nul >= 0:
+                raw = raw[:nul]
+            data = raw
+        if isinstance(data, (bytes, bytearray)):
+            return data.decode('utf-8', errors='replace')
+        return str(data)
     return read(_impl)
 
 
@@ -690,8 +832,9 @@ def _wb(args):
     hexstr = args['hex']
     data = bytes.fromhex(hexstr)
     def _impl():
-        ida_bytes.put_bytes(ea, data)
-        return 'ok'
+        if ida_segment.getseg(ea) is None:
+            return {'e': 'address not mapped'}
+        return 'ok' if ida_bytes.put_bytes(ea, data) else 'fail'
     return write(_impl)
 
 
@@ -744,9 +887,84 @@ def _sc(args):
 def _an(args):
     q = args['q']
     n = min(args.get('n', 50), 500)
+    if n <= 0:
+        return []
     cache = get_cache()
     data = cache.get_names(q, n)
     return [[_hex(ea), name] for ea, name in data]
+
+
+def _lg(args):
+    q = (args.get('q') or '').lower()
+    off = args.get('off', 0)
+    n = min(args.get('n', 100), 1000)
+    if n <= 0:
+        return []
+    def _impl():
+        results = []
+        skipped = 0
+        for ea, name in idautils.Names():
+            if ida_funcs.get_func(ea):
+                continue
+            if q and q not in name.lower():
+                continue
+            if skipped < off:
+                skipped += 1
+                continue
+            size = ida_bytes.get_item_size(ea) or 0
+            tif = ida_typeinf.tinfo_t()
+            row = [_hex(ea), name, size]
+            if idaapi.get_tinfo(tif, ea) and _tinfo_present(tif):
+                row.append(str(tif))
+            results.append(row)
+            if len(results) >= n:
+                break
+        return results
+    return read(_impl)
+
+
+def _global_value(ea, size=0):
+    name = ida_name.get_name(ea) or ''
+    if size:
+        data = ida_bytes.get_bytes(ea, min(size, 0x100000)) or b''
+        return {'addr': _hex(ea), 'name': name, 'size': len(data), 'raw': data.hex()}
+
+    item_size = ida_bytes.get_item_size(ea) or 0
+    if item_size <= 0 or item_size > 16:
+        item_size = 8 if ida_ida.inf_is_64bit() else 4
+
+    if item_size == 1:
+        val = idc.get_wide_byte(ea)
+    elif item_size == 2:
+        val = idc.get_wide_word(ea)
+    elif item_size == 4:
+        val = idc.get_wide_dword(ea)
+    elif item_size == 8:
+        val = idc.get_qword(ea)
+    else:
+        data = ida_bytes.get_bytes(ea, item_size) or b''
+        return {'addr': _hex(ea), 'name': name, 'size': item_size, 'raw': data.hex()}
+
+    return {'addr': _hex(ea), 'name': name, 'size': item_size, 'value': _hex(val), 'dec': val}
+
+
+def _rg(args):
+    name = args['name']
+    size = args.get('sz', 0)
+    def _impl():
+        ea = ida_name.get_name_ea(idaapi.BADADDR, name)
+        if ea == idaapi.BADADDR:
+            return {'e': 'not found'}
+        return _global_value(ea, size)
+    return read(_impl)
+
+
+def _rga(args):
+    ea = _ea(args['a'])
+    size = args.get('sz', 0)
+    def _impl():
+        return _global_value(ea, size)
+    return read(_impl)
 
 
 # --- 4.6 Types ---
@@ -771,6 +989,19 @@ def _st(args):
     return write(_impl)
 
 
+def _cdecls(args):
+    decl = args['decl']
+    def _impl():
+        til = ida_typeinf.get_idati()
+        flags = getattr(ida_typeinf, 'HTI_DCL', 0) | getattr(ida_typeinf, 'HTI_PAK1', 0)
+        try:
+            errors = ida_typeinf.parse_decls(til, decl, None, flags)
+            return {'errors': errors}
+        except Exception as ex:
+            return {'e': str(ex)}
+    return write(_impl)
+
+
 def _tl(args):
     q = args.get('q', '').lower()
     def _impl():
@@ -787,6 +1018,32 @@ def _tl(args):
     return read(_impl)
 
 
+def _types(args):
+    q = (args.get('q') or '').lower()
+    kind = (args.get('kind') or 'all').lower()
+    def _impl():
+        til = ida_typeinf.get_idati()
+        results = []
+        for ordinal in _local_type_ordinals(til):
+            tif = ida_typeinf.tinfo_t()
+            if not tif.get_numbered_type(til, ordinal):
+                continue
+            name = tif.get_type_name() or ''
+            if q and q not in name.lower():
+                continue
+            if tif.is_struct():
+                row_kind = 'struct'
+            elif tif.is_enum():
+                row_kind = 'enum'
+            else:
+                row_kind = 'type'
+            if kind != 'all' and kind != row_kind:
+                continue
+            results.append([ordinal, name, row_kind, tif.get_size()])
+        return results
+    return read(_impl)
+
+
 def _tg(args):
     name = args['name']
     def _impl():
@@ -795,6 +1052,55 @@ def _tg(args):
         if tif.get_named_type(til, name):
             return tif.dstr()
         return ''
+    return read(_impl)
+
+
+def _type_decl(args):
+    name = args['name']
+    def _impl():
+        til = ida_typeinf.get_idati()
+        tif = ida_typeinf.tinfo_t()
+        if not tif.get_named_type(til, name):
+            return {'e': 'not found'}
+        if tif.is_struct():
+            return _struct_detail_in_ida(name)
+        if tif.is_enum():
+            members = []
+            for member in _enum_constants_from_tif(tif):
+                row = [member[0], _hex(member[1]), member[1]]
+                if len(member) > 2 and member[2]:
+                    row.append(member[2])
+                members.append(row)
+            return {
+                'name': name,
+                'kind': 'enum',
+                'size': tif.get_size(),
+                'decl': tif.dstr(),
+                'members': members
+            }
+        return {
+            'name': name,
+            'kind': 'type',
+            'size': tif.get_size(),
+            'decl': tif.dstr()
+        }
+    return read(_impl)
+
+
+def _tsa(args):
+    ea = _ea(args['a'])
+    def _impl():
+        tif = ida_typeinf.tinfo_t()
+        if not idaapi.get_tinfo(tif, ea):
+            return {'e': 'no type'}
+        if not tif.is_struct():
+            return {'e': 'not struct', 'type': str(tif)}
+        return {
+            'addr': _hex(ea),
+            'name': tif.get_type_name() or '',
+            'size': tif.get_size(),
+            'decl': tif.dstr()
+        }
     return read(_impl)
 
 
@@ -820,6 +1126,45 @@ def _struct_member_bits(member):
     except:
         pass
     return 0
+
+
+def _enum_member_attr(member, name, default=None):
+    try:
+        v = getattr(member, name)
+        return v() if callable(v) else v
+    except:
+        return default
+
+
+def _enum_constants_from_tif(tif):
+    constants = []
+    try:
+        enum_data = ida_typeinf.enum_type_data_t()
+        if tif.get_enum_details(enum_data):
+            for member in enum_data:
+                name = _enum_member_attr(member, 'name', '') or ''
+                value = _enum_member_attr(member, 'value')
+                if value is None:
+                    value = _enum_member_attr(member, 'val')
+                if not name or value is None:
+                    continue
+                try:
+                    value = int(value)
+                except:
+                    continue
+                cmt = _enum_member_attr(member, 'cmt', '') or ''
+                row = [name, value]
+                if cmt:
+                    row.append(cmt)
+                constants.append(row)
+    except:
+        pass
+    if constants:
+        return constants
+    try:
+        return _enum_constants_from_decl(tif.dstr())
+    except:
+        return []
 
 
 def _struct_detail_in_ida(name):
@@ -953,17 +1298,18 @@ def _find_enum_value_in_ida(val, q='', limit=50):
             continue
         ename = tif.get_type_name() or ''
         decl = tif.dstr()
-        if q and q not in ename.lower() and q not in decl.lower():
+        consts = _enum_constants_from_tif(tif)
+        names_text = ' '.join(c[0] for c in consts).lower()
+        if q and q not in ename.lower() and q not in decl.lower() and q not in names_text:
             continue
-        consts = _enum_constants_from_decl(decl)
         if not consts:
             continue
 
-        ex = [[n, _hex(v)] for n, v in consts if v == val]
+        ex = [[n, _hex(v)] for n, v, *_ in consts if v == val]
         if ex:
             exact.append([ename, ex])
 
-        parts = [[n, _hex(v)] for n, v in consts if v and (val & v) == v]
+        parts = [[n, _hex(v)] for n, v, *_ in consts if v and (val & v) == v]
         if parts:
             flags.append([ename, parts[:32]])
 
@@ -974,7 +1320,7 @@ def _find_enum_value_in_ida(val, q='', limit=50):
 
 
 def _find_enum_value(args):
-    val = _ea(args['val'])
+    val = _num(args['val'])
     q = args.get('q', '').lower()
     limit = min(args.get('n', 50), 500)
     def _impl():
@@ -1172,6 +1518,65 @@ def _xfrom(args):
     return read(_impl)
 
 
+def _xtof(args):
+    struct_name = args['struct']
+    field_name = args['field']
+    def _impl():
+        til = ida_typeinf.get_idati()
+        tif = ida_typeinf.tinfo_t()
+        if not tif.get_named_type(til, struct_name):
+            return {'e': 'struct not found'}
+
+        udt = ida_typeinf.udt_type_data_t()
+        if not tif.get_udt_details(udt):
+            return {'e': 'cannot read struct'}
+
+        field_off = None
+        field_tid = idaapi.BADADDR
+        for member in udt:
+            name = _struct_member_attr(member, 'name', '') or ''
+            if name != field_name:
+                continue
+            field_off = (_struct_member_attr(member, 'offset', 0) or 0) // 8
+            try:
+                field_tid = _struct_member_attr(member, 'tid', idaapi.BADADDR)
+            except:
+                field_tid = idaapi.BADADDR
+            break
+
+        if field_off is None:
+            return {'e': 'field not found'}
+
+        results = []
+        if field_tid != idaapi.BADADDR:
+            for xref in idautils.XrefsTo(field_tid, 0):
+                fn, cmt = _addr_ctx(xref.frm)
+                row = [_hex(xref.frm), xref.type, fn]
+                if cmt:
+                    row.append(cmt)
+                results.append(row)
+        elif hasattr(ida_typeinf, 'get_udm_tid'):
+            try:
+                field_tid = ida_typeinf.get_udm_tid(tif, field_off * 8)
+                if field_tid != idaapi.BADADDR:
+                    for xref in idautils.XrefsTo(field_tid, 0):
+                        fn, cmt = _addr_ctx(xref.frm)
+                        row = [_hex(xref.frm), xref.type, fn]
+                        if cmt:
+                            row.append(cmt)
+                        results.append(row)
+            except:
+                pass
+
+        return {
+            'struct': struct_name,
+            'field': field_name,
+            'off': field_off,
+            'xrefs': results
+        }
+    return read(_impl)
+
+
 # --- 4.9 Search ---
 
 def _srch(args):
@@ -1206,6 +1611,8 @@ def _strs(args):
     q = args.get('q', '')
     off = args.get('off', 0)
     n = min(args.get('n', 100), 1000)
+    if n <= 0:
+        return []
     cache = get_cache()
     data = cache.get_strings(q, off, n)
     return [[_hex(ea), s, st] for ea, s, st in data]
@@ -1290,7 +1697,7 @@ def _cfg(args):
             nodes.append([_hex(block.start_ea), _hex(block.end_ea)])
             for succ_block in _block_succs(block):
                 edges.append([_hex(block.start_ea), _hex(succ_block.start_ea)])
-        return {'n': nodes, 'e': edges}
+        return {'nodes': nodes, 'edges': edges}
     return read(_impl)
 
 
@@ -1403,9 +1810,83 @@ def _pat(args):
     hexstr = args['hex']
     data = bytes.fromhex(hexstr)
     def _impl():
+        if ida_segment.getseg(ea) is None:
+            return {'e': 'address not mapped'}
+        for i, b in enumerate(data):
+            cur = idc.get_wide_byte(ea + i)
+            if cur == b:
+                continue
+            ida_bytes.patch_byte(ea + i, b)
+            if idc.get_wide_byte(ea + i) != b:
+                return 'fail'
+        return 'ok'
+    return write(_impl)
+
+
+_KS_CACHE = {}
+
+
+def _ks_for_idb():
+    try:
+        import keystone
+    except ImportError:
+        return None, 'keystone not installed (pip install keystone-engine)'
+
+    proc = (ida_ida.inf_get_procname() or '').lower()
+    is64 = ida_ida.inf_is_64bit()
+    is32 = ida_ida.inf_is_32bit_exactly() if hasattr(ida_ida, 'inf_is_32bit_exactly') else not is64
+    bits = 64 if is64 else (32 if is32 else 16)
+    key = (proc, bits)
+    if key in _KS_CACHE:
+        return _KS_CACHE[key], ''
+
+    arch = None
+    mode = None
+    if proc.startswith('metapc') or proc.startswith('80'):
+        arch = keystone.KS_ARCH_X86
+        mode = keystone.KS_MODE_64 if bits == 64 else (keystone.KS_MODE_32 if bits == 32 else keystone.KS_MODE_16)
+    elif proc.startswith('arm'):
+        if bits == 64:
+            arch = keystone.KS_ARCH_ARM64
+            mode = keystone.KS_MODE_LITTLE_ENDIAN
+        else:
+            arch = keystone.KS_ARCH_ARM
+            mode = keystone.KS_MODE_ARM
+    elif proc.startswith('mips'):
+        arch = keystone.KS_ARCH_MIPS
+        mode = (keystone.KS_MODE_MIPS64 if bits == 64 else keystone.KS_MODE_MIPS32) | keystone.KS_MODE_LITTLE_ENDIAN
+    elif proc.startswith('ppc'):
+        arch = keystone.KS_ARCH_PPC
+        mode = (keystone.KS_MODE_PPC64 if bits == 64 else keystone.KS_MODE_PPC32) | keystone.KS_MODE_BIG_ENDIAN
+
+    if arch is None:
+        return None, f'unsupported processor for keystone: {proc} {bits}-bit'
+
+    try:
+        ks = keystone.Ks(arch, mode)
+    except Exception as ex:
+        return None, str(ex)
+    _KS_CACHE[key] = ks
+    return ks, ''
+
+
+def _pasm(args):
+    ea = _ea(args['a'])
+    asm = args['asm']
+    def _impl():
+        ks, err = _ks_for_idb()
+        if ks is None:
+            return {'e': err}
+        try:
+            encoding, count = ks.asm(asm, ea)
+        except Exception as ex:
+            return {'e': f'assemble failed: {ex}'}
+        if not encoding:
+            return {'e': 'assemble produced no bytes'}
+        data = bytes(encoding)
         for i, b in enumerate(data):
             ida_bytes.patch_byte(ea + i, b)
-        return 'ok'
+        return {'addr': _hex(ea), 'bytes': data.hex(), 'count': count}
     return write(_impl)
 
 
@@ -1500,17 +1981,23 @@ def _mkdt(args):
     sz = args.get('sz', 1)
     dtype = args.get('type', 'byte')
     def _impl():
+        if sz <= 0:
+            return {'e': 'sz must be positive'}
+        if ida_segment.getseg(ea) is None:
+            return {'e': 'address not mapped'}
         type_map = {'byte': 1, 'word': 2, 'dword': 4, 'qword': 8}
         dsz = type_map.get(dtype, sz)
         if dsz == 1:
-            ida_bytes.create_byte(ea, sz)
+            ok = ida_bytes.create_byte(ea, sz)
         elif dsz == 2:
-            ida_bytes.create_word(ea, sz)
+            ok = ida_bytes.create_word(ea, sz)
         elif dsz == 4:
-            ida_bytes.create_dword(ea, sz)
+            ok = ida_bytes.create_dword(ea, sz)
         elif dsz == 8:
-            ida_bytes.create_qword(ea, sz)
-        return 'ok'
+            ok = ida_bytes.create_qword(ea, sz)
+        else:
+            return {'e': 'type must be byte, word, dword, or qword'}
+        return 'ok' if ok else 'fail'
     return write(_impl)
 
 
@@ -1518,8 +2005,11 @@ def _undef(args):
     ea = _ea(args['a'])
     sz = args['sz']
     def _impl():
-        ida_bytes.del_items(ea, ida_bytes.DELIT_SIMPLE, sz)
-        return 'ok'
+        if sz <= 0:
+            return {'e': 'sz must be positive'}
+        if ida_segment.getseg(ea) is None:
+            return {'e': 'address not mapped'}
+        return 'ok' if ida_bytes.del_items(ea, ida_bytes.DELIT_SIMPLE, sz) else 'fail'
     return write(_impl)
 
 
@@ -1583,6 +2073,291 @@ def _rtv(args):
             return 'fail'
         except Exception as ex:
             return str(ex)
+    return write(_impl)
+
+
+def _func_frame_tif(func):
+    if hasattr(ida_frame, 'get_func_frame'):
+        try:
+            tif = ida_typeinf.tinfo_t()
+            if ida_frame.get_func_frame(tif, func):
+                return tif
+        except:
+            pass
+    return None
+
+
+def _frame_udm_index(tif, name):
+    try:
+        idx = tif.find_udm(name)
+        if idx is not None and idx >= 0:
+            return idx
+    except:
+        pass
+    try:
+        udt = ida_typeinf.udt_type_data_t()
+        if tif.get_udt_details(udt):
+            for idx, member in enumerate(udt):
+                if (_struct_member_attr(member, 'name', '') or '') == name:
+                    return idx
+    except:
+        pass
+    return -1
+
+
+def _frame_member_info(func, name):
+    tif = _func_frame_tif(func)
+    if tif is not None:
+        try:
+            udt = ida_typeinf.udt_type_data_t()
+            if tif.get_udt_details(udt):
+                for idx, member in enumerate(udt):
+                    if (_struct_member_attr(member, 'name', '') or '') == name:
+                        off_bits = _struct_member_attr(member, 'offset', 0) or 0
+                        size_bits = _struct_member_bits(member)
+                        return {
+                            'tif': tif,
+                            'idx': idx,
+                            'off': off_bits // 8,
+                            'size': size_bits // 8 if size_bits else 1,
+                        }
+        except:
+            pass
+
+    ida_struct, sptr = _frame_struct(func)
+    if ida_struct and sptr:
+        try:
+            member = ida_struct.get_member_by_name(sptr, name)
+            if member:
+                return {
+                    'struct': ida_struct,
+                    'sptr': sptr,
+                    'member': member,
+                    'off': member.soff,
+                    'size': max(member.eoff - member.soff, 1),
+                }
+        except:
+            pass
+    return None
+
+
+def _parse_frame_type(decl):
+    tif = ida_typeinf.tinfo_t()
+    til = ida_typeinf.get_idati()
+    decl = decl or 'unsigned char'
+    decl = decl if decl.rstrip().endswith(';') else decl + ';'
+    if not _parse_tinfo_decl(tif, til, decl):
+        return None
+    return tif
+
+
+def _frame_struct(func):
+    try:
+        import ida_struct
+        sptr = ida_struct.get_struct(func.frame)
+        return ida_struct, sptr
+    except:
+        return None, None
+
+
+def _fv_frame(args):
+    ea = _ea(args['a'])
+    def _impl():
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+
+        tif = _func_frame_tif(func)
+        if tif is not None:
+            udt = ida_typeinf.udt_type_data_t()
+            if not tif.get_udt_details(udt):
+                return []
+            results = []
+            for member in udt:
+                off_bits = _struct_member_attr(member, 'offset', 0) or 0
+                size_bits = _struct_member_bits(member)
+                mtif = _struct_member_attr(member, 'type')
+                results.append([
+                    off_bits // 8,
+                    size_bits // 8 if size_bits else 0,
+                    _struct_member_attr(member, 'name', '') or '',
+                    str(mtif) if mtif else ''
+                ])
+            return results
+
+        ida_struct, sptr = _frame_struct(func)
+        if not ida_struct or not sptr:
+            return []
+        results = []
+        for i in range(sptr.memqty):
+            member = sptr.get_member(i)
+            if not member:
+                continue
+            results.append([
+                member.soff,
+                member.eoff - member.soff,
+                ida_struct.get_member_name(member.id) or '',
+                ''
+            ])
+        return results
+    return read(_impl)
+
+
+def _cfv(args):
+    ea = _ea(args['a'])
+    name = args['name']
+    off = args.get('off', args.get('offset'))
+    off = off if isinstance(off, int) else int(off, 0)
+    decl = args.get('decl', 'unsigned char')
+    def _impl():
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+        mtif = _parse_frame_type(decl)
+        if mtif is None:
+            return {'e': 'parse error'}
+
+        if hasattr(ida_frame, 'add_frame_member'):
+            try:
+                return 'ok' if ida_frame.add_frame_member(func, name, off, mtif, None) else 'fail'
+            except Exception as ex:
+                return {'e': str(ex)}
+
+        ida_struct, sptr = _frame_struct(func)
+        if not ida_struct or not sptr:
+            return {'e': 'no frame'}
+        size = max(mtif.get_size(), 1)
+        flags = ida_bytes.byte_flag()
+        if size == 2:
+            flags = ida_bytes.word_flag()
+        elif size == 4:
+            flags = ida_bytes.dword_flag()
+        elif size == 8:
+            flags = ida_bytes.qword_flag()
+        try:
+            rc = ida_struct.add_struc_member(sptr, name, off, flags, None, size)
+            if rc != 0:
+                return {'e': f'add_struc_member rc={rc}'}
+            try:
+                member = ida_struct.get_member_by_name(sptr, name)
+                if member:
+                    ida_struct.set_member_tinfo(sptr, member, 0, mtif, 0)
+            except:
+                pass
+            return 'ok'
+        except Exception as ex:
+            return {'e': str(ex)}
+    return write(_impl)
+
+
+def _dfv(args):
+    ea = _ea(args['a'])
+    name = args['name']
+    def _impl():
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+
+        info = _frame_member_info(func, name)
+        if not info:
+            return {'e': 'not found'}
+        if hasattr(ida_frame, 'delete_frame_members'):
+            try:
+                if ida_frame.delete_frame_members(func, info['off'], info['off'] + info['size']):
+                    return 'ok'
+            except Exception as ex:
+                frame_err = str(ex)
+            else:
+                frame_err = 'delete_frame_members failed'
+
+        tif = info.get('tif')
+        if tif is not None:
+            try:
+                return 'ok' if tif.del_udm(info['idx']) == ida_typeinf.TERR_OK else {'e': frame_err}
+            except Exception as ex:
+                return {'e': str(ex)}
+
+        ida_struct, sptr = _frame_struct(func)
+        if not ida_struct or not sptr:
+            return {'e': 'no frame'}
+        member = info.get('member') or ida_struct.get_member_by_name(sptr, name)
+        if not member:
+            return {'e': 'not found'}
+        ida_struct.del_struc_member(sptr, member.soff)
+        return 'ok'
+    return write(_impl)
+
+
+def _rfv(args):
+    ea = _ea(args['a'])
+    old = args['old']
+    new = args['new']
+    def _impl():
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+
+        info = _frame_member_info(func, old)
+        if not info:
+            return {'e': 'not found'}
+        tif = info.get('tif')
+        if tif is not None:
+            try:
+                return 'ok' if tif.rename_udm(info['idx'], new) == ida_typeinf.TERR_OK else 'fail'
+            except Exception as ex:
+                return {'e': str(ex)}
+
+        ida_struct, sptr = _frame_struct(func)
+        if not ida_struct or not sptr:
+            return {'e': 'rename requires legacy frame struct API'}
+        member = info.get('member') or ida_struct.get_member_by_name(sptr, old)
+        if not member:
+            return {'e': 'not found'}
+        return 'ok' if ida_struct.set_member_name(sptr, member.soff, new) else 'fail'
+    return write(_impl)
+
+
+def _tfv(args):
+    ea = _ea(args['a'])
+    name = args['name']
+    decl = args['decl']
+    def _impl():
+        func = ida_funcs.get_func(ea)
+        if not func:
+            return {'e': 'no func'}
+        mtif = _parse_frame_type(decl)
+        if mtif is None:
+            return {'e': 'parse error'}
+
+        info = _frame_member_info(func, name)
+        if not info:
+            return {'e': 'not found'}
+        if hasattr(ida_frame, 'set_frame_member_type'):
+            try:
+                if ida_frame.set_frame_member_type(func, info['off'], mtif, None):
+                    return 'ok'
+            except Exception as ex:
+                frame_err = str(ex)
+            else:
+                frame_err = 'set_frame_member_type failed'
+
+        tif = info.get('tif')
+        if tif is not None:
+            try:
+                return 'ok' if tif.set_udm_type(info['idx'], mtif) == ida_typeinf.TERR_OK else {'e': frame_err}
+            except Exception as ex:
+                return {'e': str(ex)}
+
+        ida_struct, sptr = _frame_struct(func)
+        if not ida_struct or not sptr:
+            return {'e': 'no frame'}
+        member = info.get('member') or ida_struct.get_member_by_name(sptr, name)
+        if not member:
+            return {'e': 'not found'}
+        try:
+            return 'ok' if ida_struct.set_member_tinfo(sptr, member, 0, mtif, 0) else 'fail'
+        except Exception as ex:
+            return {'e': str(ex)}
     return write(_impl)
 
 
@@ -1886,45 +2661,43 @@ DISPATCH = {
     'get_info': _info,
     'read_file_bytes': _fraw,
     'addr_to_fileoff': _fmap,
-    'get_filepath': _fpath,
     'parse_pe': _pe,
     'parse_elf': _elf,
+    'get_cursor': _cursor,
+    'get_cursor_func': _cursor_func,
     'list_functions': _fl,
     'get_func_info': _fi,
+    'get_func_by_name': _fbn,
     'decompile': _dec,
     'get_func_type': _decl,
     'get_callers': _cf,
     'get_callees': _ct,
-    'get_local_vars': _fv,
-    'get_func_args': _fa,
+    'get_vars': _vars,
     'disassemble': _dis,
     'read_bytes': _rb,
-    'write_bytes': _wb,
+    'read_value': _rval,
+    'read_string': _rstr,
     'get_head': _head,
     'get_name': _gn,
     'set_name': _sn,
     'get_comment': _gc,
     'set_comment': _sc,
     'search_names': _an,
+    'list_globals': _lg,
+    'read_global': _rg,
     'get_type': _gt,
     'set_type': _st,
-    'list_structs': _tl,
-    'get_struct': _tg,
-    'get_struct_details': _tgd,
+    'set_c_decls': _cdecls,
+    'list_types': _types,
+    'get_type_decl': _type_decl,
     'read_struct': _read_struct,
-    'set_struct': _ts,
-    'delete_struct': _td,
-    'list_enums': _el,
-    'get_enum': _eg,
+    'delete_type': _td,
     'find_enum_value': _find_enum_value,
-    'set_enum': _es,
-    'list_local_types': _lti,
-    'get_local_type': _ltg,
-    'set_local_type': _lts,
     'list_segments': _segs,
     'get_segment_info': _segi,
     'xrefs_to': _xto,
     'xrefs_from': _xfrom,
+    'xrefs_to_field': _xtof,
     'search_bytes': _srch,
     'search_strings': _strs,
     'search_imm': _imm,
@@ -1932,9 +2705,8 @@ DISPATCH = {
     'list_exports': _exp,
     'list_entries': _ent,
     'get_cfg': _cfg,
-    'get_predecessors': _preds,
-    'get_successors': _succs,
     'patch_bytes': _pat,
+    'patch_asm': _pasm,
     'patch_list': _patl,
     'bookmark_list': _bml,
     'bookmark_set': _bms,
@@ -1946,12 +2718,13 @@ DISPATCH = {
     'undefine': _undef,
     'rename_var': _rnv,
     'retype_var': _rtv,
+    'list_frame_vars': _fv_frame,
+    'create_frame_var': _cfv,
+    'delete_frame_var': _dfv,
+    'rename_frame_var': _rfv,
+    'retype_frame_var': _tfv,
     'call_tree': _ctree,
     'callers_tree': _ctreet,
-    'batch_set_names': _batch_set_names,
-    'batch_set_comments': _batch_set_comments,
-    'batch_set_types': _batch_set_types,
-    'batch_decompile': _batch_decompile,
     'get_func_by_addr': _get_func_by_addr,
     'kernel_read': _kernel_read,
     'kernel_modules': _kernel_modules,
@@ -1964,10 +2737,11 @@ DISPATCH = {
 
 
 _CACHE_INVALIDATING = frozenset([
-    'set_name', 'write_bytes', 'set_type', 'set_struct', 'delete_struct',
-    'set_enum', 'set_local_type', 'patch_bytes',
+    'set_name', 'set_type', 'delete_type',
+    'set_c_decls', 'patch_bytes', 'patch_asm',
     'create_function', 'delete_function', 'make_data', 'undefine', 'reanalyze',
-    'batch_set_names', 'batch_set_comments', 'batch_set_types'
+    'rename_var', 'retype_var', 'create_frame_var', 'delete_frame_var',
+    'rename_frame_var', 'retype_frame_var'
 ])
 
 
